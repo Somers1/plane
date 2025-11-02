@@ -130,9 +130,6 @@ export const SidebarProjectsListItem: React.FC<Props> = observer((props) => {
               const root = createRoot(container);
               root.render(
                 <div className="rounded flex items-center bg-custom-background-100 text-sm p-1 pr-2">
-                  <div className="size-4 grid place-items-center flex-shrink-0">
-                    {project && <Logo logo={project?.logo_props} />}
-                  </div>
                   <p className="truncate text-custom-sidebar-text-200">{project?.name}</p>
                 </div>
               );

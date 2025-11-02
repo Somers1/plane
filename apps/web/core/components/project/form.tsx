@@ -9,14 +9,13 @@ import { useTranslation } from "@plane/i18n";
 // plane imports
 import { Button } from "@plane/propel/button";
 import { EmojiPicker } from "@plane/propel/emoji-icon-picker";
-import { TOAST_TYPE, setToast } from "@plane/propel/toast";
+import { setToast, TOAST_TYPE } from "@plane/propel/toast";
 import { Tooltip } from "@plane/propel/tooltip";
 import type { IProject, IWorkspace } from "@plane/types";
-import { CustomSelect, Input, TextArea, EmojiIconPickerTypes } from "@plane/ui";
-import { renderFormattedDate, getFileURL } from "@plane/utils";
+import { CustomSelect, EmojiIconPickerTypes, Input, TextArea } from "@plane/ui";
+import { renderFormattedDate } from "@plane/utils";
 // components
 import { Logo } from "@/components/common/logo";
-import { ImagePickerPopover } from "@/components/core/image-picker-popover";
 import { TimezoneSelect } from "@/components/global";
 // helpers
 import { captureError, captureSuccess } from "@/helpers/event-tracker.helper";
@@ -184,6 +183,42 @@ export const ProjectDetailsForm: FC<IProjectDetailsForm> = (props) => {
       <div className="relative h-12 w-full">
         <div className="z-5 absolute bottom-4 flex w-full items-end justify-between gap-3 px-4">
           <div className="flex flex-grow gap-3 truncate">
+            <Controller
+              control={control}
+              name="logo_props"
+              render={({ field: { value, onChange } }) => (
+                <EmojiPicker
+                  iconType="material"
+                  closeOnSelect={false}
+                  isOpen={isOpen}
+                  handleToggle={(val: boolean) => setIsOpen(val)}
+                  className="flex items-center justify-center"
+                  buttonClassName="flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-lg bg-white/10"
+                  label={<Logo logo={value} size={28} />}
+                  // TODO: fix types
+                  onChange={(val: any) => {
+                    let logoValue = {};
+
+                    if (val?.type === "emoji")
+                      logoValue = {
+                        value: val.value,
+                      };
+                    else if (val?.type === "icon") logoValue = val.value;
+
+                    onChange({
+                      in_use: val?.type,
+                      [val?.type]: logoValue,
+                    });
+                    setIsOpen(false);
+                  }}
+                  defaultIconColor={value?.in_use && value.in_use === "icon" ? value?.icon?.color : undefined}
+                  defaultOpen={
+                    value.in_use && value.in_use === "emoji" ? EmojiIconPickerTypes.EMOJI : EmojiIconPickerTypes.ICON
+                  }
+                  disabled={!isAdmin}
+                />
+              )}
+            />
             <div className="flex flex-col gap-1 truncate text-white">
               <span className="truncate text-lg font-semibold">{watch("name")}</span>
               <span className="flex items-center gap-2 text-sm">
