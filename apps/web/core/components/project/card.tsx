@@ -203,9 +203,9 @@ export const ProjectCard: React.FC<Props> = observer((props) => {
               </div>
 
               <div className="flex w-full flex-col justify-between gap-0.5 truncate">
-                <h3 className="truncate font-semibold text-white">{project.name}</h3>
+                <h3 className="truncate font-semibold text-white  hover:cursor-pointer hover:underline">{project.name}</h3>
                 <span className="flex items-center gap-1.5">
-                  <p className="text-xs font-medium text-white">{project.identifier} </p>
+                  <p className="text-xs font-medium text-white  hover:cursor-pointer  hover:underline">{project.identifier} </p>
                   {project.network === 0 && <Lock className="h-2.5 w-2.5 text-white " />}
                 </span>
               </div>
