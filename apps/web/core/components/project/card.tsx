@@ -202,9 +202,7 @@ export const ProjectCard: React.FC<Props> = observer((props) => {
         className="flex flex-col rounded border border-custom-border-200 bg-custom-background-100"
       >
         <ContextMenu parentRef={projectCardRef} items={MENU_ITEMS} />
-        <div className="relative h-[118px] w-full rounded-t ">
-          <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/60 to-transparent" />
-
+        <div className="relative h-[70px] w-full rounded-t ">
           <div className="absolute bottom-4 z-[1] flex h-10 w-full items-center justify-between gap-3 px-4">
             <div className="flex flex-grow items-center gap-2.5 truncate">
               <div className="h-9 w-9 flex-shrink-0 grid place-items-center rounded bg-white/10">
