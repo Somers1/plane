@@ -27,11 +27,10 @@ export type TCreateProjectFormProps = {
   handleNextStep: (projectId: string) => void;
   data?: Partial<TProject>;
   templateId?: string;
-  updateCoverImageStatus: (projectId: string, coverImage: string) => Promise<void>;
 };
 
 export const CreateProjectForm: FC<TCreateProjectFormProps> = observer((props) => {
-  const { setToFavorite, workspaceSlug, data, onClose, handleNextStep, updateCoverImageStatus } = props;
+  const { setToFavorite, workspaceSlug, data, onClose, handleNextStep } = props;
   // store
   const { t } = useTranslation();
   const { addProjectToFavorites, createProject } = useProject();
@@ -57,20 +56,9 @@ export const CreateProjectForm: FC<TCreateProjectFormProps> = observer((props) =
   };
 
   const onSubmit = async (formData: Partial<TProject>) => {
-    // Upper case identifier
     formData.identifier = formData.identifier?.toUpperCase();
-    const coverImage = formData.cover_image_url;
-    // if unsplash or a pre-defined image is uploaded, delete the old uploaded asset
-    if (coverImage?.startsWith("http")) {
-      formData.cover_image = coverImage;
-      formData.cover_image_asset = null;
-    }
-
     return createProject(workspaceSlug.toString(), formData)
       .then(async (res) => {
-        if (coverImage) {
-          await updateCoverImageStatus(res.id, coverImage);
-        }
         captureSuccess({
           eventName: PROJECT_TRACKER_EVENTS.create,
           payload: {
@@ -82,7 +70,6 @@ export const CreateProjectForm: FC<TCreateProjectFormProps> = observer((props) =
           title: t("success"),
           message: t("project_created_successfully"),
         });
-
         if (setToFavorite) {
           handleAddToFavorites(res.id);
         }
@@ -149,9 +136,8 @@ export const CreateProjectForm: FC<TCreateProjectFormProps> = observer((props) =
   return (
     <FormProvider {...methods}>
       <ProjectCreateHeader handleClose={handleClose} isMobile={isMobile} />
-
       <form onSubmit={handleSubmit(onSubmit)} className="px-3">
-        <div className="mt-9 space-y-6 pb-5">
+        <div className="mt-4 space-y-6 pb-5">
           <ProjectCommonAttributes
             setValue={setValue}
             isMobile={isMobile}
