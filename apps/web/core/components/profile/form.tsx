@@ -185,12 +185,7 @@ export const ProfileForm = observer((props: TProfileFormProps) => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <div className="flex w-full flex-col gap-6">
-          <div className="relative h-44 w-full">
-            <img
-              src={userCover ? getFileURL(userCover) : "https://images.unsplash.com/photo-1506383796573-caf02b4a79ab"}
-              className="h-44 w-full rounded-lg object-cover"
-              alt={currentUser?.first_name ?? "Cover image"}
-            />
+          <div className="relative h-12 w-full">
             <div className="absolute -bottom-6 left-6 flex items-end justify-between">
               <div className="flex gap-3">
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-custom-background-90">
@@ -213,21 +208,6 @@ export const ProfileForm = observer((props: TProfileFormProps) => {
                   </button>
                 </div>
               </div>
-            </div>
-            <div className="absolute bottom-3 right-3 flex">
-              <Controller
-                control={control}
-                name="cover_image_url"
-                render={({ field: { value, onChange } }) => (
-                  <ImagePickerPopover
-                    label={t("change_cover")}
-                    onChange={(imageUrl) => onChange(imageUrl)}
-                    control={control}
-                    value={value ?? "https://images.unsplash.com/photo-1506383796573-caf02b4a79ab"}
-                    isProfileCover
-                  />
-                )}
-              />
             </div>
           </div>
           <div className="item-center mt-6 flex justify-between">

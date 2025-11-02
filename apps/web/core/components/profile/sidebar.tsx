@@ -104,15 +104,6 @@ export const ProfileSidebar: FC<TProfileSidebar> = observer((props) => {
                 </Link>
               </div>
             )}
-            <img
-              src={
-                userData?.cover_image_url
-                  ? getFileURL(userData?.cover_image_url)
-                  : "/users/user-profile-cover-default-img.png"
-              }
-              alt={userData?.display_name}
-              className="h-[110px] w-full object-cover"
-            />
             <div className="absolute -bottom-[26px] left-5 h-[52px] w-[52px] rounded">
               {userData?.avatar_url && userData?.avatar_url !== "" ? (
                 <img

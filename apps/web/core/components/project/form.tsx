@@ -63,7 +63,6 @@ export const ProjectDetailsForm: FC<IProjectDetailsForm> = (props) => {
   });
   // derived values
   const currentNetwork = NETWORK_CHOICES.find((n) => n.key === project?.network);
-  const coverImage = watch("cover_image_url");
 
   useEffect(() => {
     if (project && projectId !== getValues("id")) {
@@ -182,54 +181,9 @@ export const ProjectDetailsForm: FC<IProjectDetailsForm> = (props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="relative h-44 w-full">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <img
-          src={getFileURL(
-            coverImage ??
-              "https://images.unsplash.com/photo-1672243775941-10d763d9adef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
-          )}
-          alt="Project cover image"
-          className="h-44 w-full rounded-md object-cover"
-        />
+      <div className="relative h-12 w-full">
         <div className="z-5 absolute bottom-4 flex w-full items-end justify-between gap-3 px-4">
           <div className="flex flex-grow gap-3 truncate">
-            <Controller
-              control={control}
-              name="logo_props"
-              render={({ field: { value, onChange } }) => (
-                <EmojiPicker
-                  iconType="material"
-                  closeOnSelect={false}
-                  isOpen={isOpen}
-                  handleToggle={(val: boolean) => setIsOpen(val)}
-                  className="flex items-center justify-center"
-                  buttonClassName="flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-lg bg-white/10"
-                  label={<Logo logo={value} size={28} />}
-                  // TODO: fix types
-                  onChange={(val: any) => {
-                    let logoValue = {};
-
-                    if (val?.type === "emoji")
-                      logoValue = {
-                        value: val.value,
-                      };
-                    else if (val?.type === "icon") logoValue = val.value;
-
-                    onChange({
-                      in_use: val?.type,
-                      [val?.type]: logoValue,
-                    });
-                    setIsOpen(false);
-                  }}
-                  defaultIconColor={value?.in_use && value.in_use === "icon" ? value?.icon?.color : undefined}
-                  defaultOpen={
-                    value.in_use && value.in_use === "emoji" ? EmojiIconPickerTypes.EMOJI : EmojiIconPickerTypes.ICON
-                  }
-                  disabled={!isAdmin}
-                />
-              )}
-            />
             <div className="flex flex-col gap-1 truncate text-white">
               <span className="truncate text-lg font-semibold">{watch("name")}</span>
               <span className="flex items-center gap-2 text-sm">
@@ -239,24 +193,6 @@ export const ProjectDetailsForm: FC<IProjectDetailsForm> = (props) => {
                   {currentNetwork && t(currentNetwork?.i18n_label)}
                 </span>
               </span>
-            </div>
-          </div>
-          <div className="flex flex-shrink-0 justify-center">
-            <div>
-              <Controller
-                control={control}
-                name="cover_image_url"
-                render={({ field: { value, onChange } }) => (
-                  <ImagePickerPopover
-                    label={t("change_cover")}
-                    control={control}
-                    onChange={onChange}
-                    value={value ?? null}
-                    disabled={!isAdmin}
-                    projectId={project.id}
-                  />
-                )}
-              />
             </div>
           </div>
         </div>
