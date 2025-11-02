@@ -115,6 +115,33 @@ class Project(BaseModel):
     # external_id for imports
     external_source = models.CharField(max_length=255, null=True, blank=True)
     external_id = models.CharField(max_length=255, blank=True, null=True)
+    # Project-level prioritization and stage (for backlog/board-like grouping)
+    class Stage(models.TextChoices):
+        BACKLOG = "backlog", "Backlog"
+        UNSTARTED = "unstarted", "Unstarted"
+        STARTED = "started", "Started"
+        COMPLETED = "completed", "Completed"
+        CANCELLED = "cancelled", "Cancelled"
+
+    class Priority(models.TextChoices):
+        URGENT = "urgent", "Urgent"
+        HIGH = "high", "High"
+        MEDIUM = "medium", "Medium"
+        LOW = "low", "Low"
+        NONE = "none", "None"
+
+    stage = models.CharField(
+        max_length=20,
+        choices=Stage.choices,
+        default=Stage.BACKLOG,
+        db_index=True,
+    )
+    priority = models.CharField(
+        max_length=30,
+        choices=Priority.choices,
+        default=Priority.NONE,
+        db_index=True,
+    )
 
     @property
     def cover_image_url(self):

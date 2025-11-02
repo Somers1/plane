@@ -51,6 +51,9 @@ export interface IProject extends IPartialProject {
   is_favorite?: boolean;
   members?: string[];
   timezone?: string;
+    // project-level prioritization and stage for board grouping
+  stage?: TStateGroups;
+  priority?: "urgent" | "high" | "medium" | "low" | "none";
 }
 
 export type TProjectAnalyticsCountParams = {
