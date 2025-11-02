@@ -117,7 +117,9 @@ export class ProjectFilterStore implements IProjectFilterStore {
     const displayFilters = this.getDisplayFiltersByWorkspaceSlug(workspaceSlug);
     runInAction(() => {
       this.displayFilters[workspaceSlug] = {
-        order_by: displayFilters?.order_by || "created_at",
+        order_by: displayFilters?.order_by || "sort_order",
+        group_by: displayFilters?.group_by || "stage",
+        sub_group_by: displayFilters?.sub_group_by,
       };
       this.filters[workspaceSlug] = this.filters[workspaceSlug] ?? {};
     });

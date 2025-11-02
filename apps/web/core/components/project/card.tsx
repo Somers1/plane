@@ -30,10 +30,11 @@ import { ArchiveRestoreProjectModal } from "./settings/archive-project/archive-r
 
 type Props = {
   project: IProject;
+  disableLink?: boolean;
 };
 
 export const ProjectCard: React.FC<Props> = observer((props) => {
-  const { project } = props;
+  const { project, disableLink = false } = props;
   // states
   const [deleteProjectModalOpen, setDeleteProjectModal] = useState(false);
   const [joinProjectModalOpen, setJoinProjectModal] = useState(false);
@@ -188,19 +189,11 @@ export const ProjectCard: React.FC<Props> = observer((props) => {
           archive={false}
         />
       )}
-      <Link
-        ref={projectCardRef}
-        href={`/${workspaceSlug}/projects/${project.id}/issues`}
-        onClick={(e) => {
-          if (!isMemberOfProject || isArchived) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (!isArchived) setJoinProjectModal(true);
-          }
-        }}
-        data-prevent-progress={!isMemberOfProject || isArchived}
-        className="flex flex-col rounded border border-custom-border-200 bg-custom-background-100"
-      >
+      {disableLink ? (
+        <div
+          ref={projectCardRef}
+          className="flex flex-col rounded border border-custom-border-200 bg-custom-background-100"
+        >
         <ContextMenu parentRef={projectCardRef} items={MENU_ITEMS} />
         <div className="relative h-[70px] w-full rounded-t ">
           <div className="absolute bottom-4 z-[1] flex h-10 w-full items-center justify-between gap-3 px-4">
@@ -354,7 +347,169 @@ export const ProjectCard: React.FC<Props> = observer((props) => {
             )}
           </div>
         </div>
-      </Link>
+      </div>
+      ) : (
+        <Link
+          ref={projectCardRef}
+          href={`/${workspaceSlug}/projects/${project.id}/issues`}
+          onClick={(e) => {
+            if (!isMemberOfProject || isArchived) {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!isArchived) setJoinProjectModal(true);
+            }
+          }}
+          data-prevent-progress={!isMemberOfProject || isArchived}
+          className="flex flex-col rounded border border-custom-border-200 bg-custom-background-100"
+        >
+          <ContextMenu parentRef={projectCardRef} items={MENU_ITEMS} />
+          <div className="relative h-[70px] w-full rounded-t ">
+            <div className="absolute bottom-4 z-[1] flex h-10 w-full items-center justify-between gap-3 px-4">
+              <div className="flex flex-grow items-center gap-2.5 truncate">
+                <div className="h-9 w-9 flex-shrink-0 grid place-items-center rounded bg-white/10">
+                  <Logo logo={project.logo_props} size={18} />
+                </div>
+
+                <div className="flex w-full flex-col justify-between gap-0.5 truncate">
+                  <h3 className="truncate font-semibold text-white">{project.name}</h3>
+                  <span className="flex items-center gap-1.5">
+                    <p className="text-xs font-medium text-white">{project.identifier} </p>
+                    {project.network === 0 && <Lock className="h-2.5 w-2.5 text-white " />}
+                  </span>
+                </div>
+              </div>
+
+              {!isArchived && (
+                <div data-prevent-progress className="flex h-full flex-shrink-0 items-center gap-2">
+                  <button
+                    className="flex h-6 w-6 items-center justify-center rounded bg-white/10"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      handleCopyText();
+                    }}
+                  >
+                    <LinkIcon className="h-3 w-3 text-white" />
+                  </button>
+                  {shouldRenderFavorite && (
+                    <FavoriteStar
+                      buttonClassName="h-6 w-6 bg-white/10 rounded"
+                      iconClassName={cn("h-3 w-3", {
+                        "text-white": !project.is_favorite,
+                      })}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (project.is_favorite) handleRemoveFromFavorites();
+                        else handleAddToFavorites();
+                      }}
+                      selected={!!project.is_favorite}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div
+            className={cn("flex h-[104px] w-full flex-col justify-between rounded-b p-4", {
+              "opacity-90": isArchived,
+            })}
+          >
+            <p className="line-clamp-2 break-words text-sm text-custom-text-300">
+              {project.description && project.description.trim() !== ""
+                ? project.description
+                : `Created on ${renderFormattedDate(project.created_at)}`}
+            </p>
+            <div className="item-center flex justify-between">
+              <div className="flex items-center justify-center gap-2">
+                <Tooltip
+                  isMobile={isMobile}
+                  tooltipHeading="Members"
+                  tooltipContent={
+                    project.members && project.members.length > 0 ? `${project.members.length} Members` : "No Member"
+                  }
+                  position="top"
+                >
+                  {projectMembersIds && projectMembersIds.length > 0 ? (
+                    <div className="flex cursor-pointer items-center gap-2 text-custom-text-200">
+                      <AvatarGroup showTooltip={false}>
+                        {projectMembersIds.map((memberId) => {
+                          const member = getUserDetails(memberId);
+                          if (!member) return null;
+                          return (
+                            <Avatar key={member.id} name={member.display_name} src={getFileURL(member.avatar_url)} />
+                          );
+                        })}
+                      </AvatarGroup>
+                    </div>
+                  ) : (
+                    <span className="text-sm italic text-custom-text-400">No Member Yet</span>
+                  )}
+                </Tooltip>
+                {isArchived && <div className="text-xs text-custom-text-400 font-medium">Archived</div>}
+              </div>
+              {isArchived ? (
+                hasAdminRole && (
+                  <div className="flex items-center justify-center gap-2">
+                    <div
+                      className="flex items-center justify-center text-xs text-custom-text-400 font-medium hover:text-custom-text-200"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setRestoreProject(true);
+                      }}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <ArchiveRestoreIcon className="h-3.5 w-3.5" />
+                        Restore
+                      </div>
+                    </div>
+                    <div
+                      className="flex items-center justify-center text-xs text-custom-text-400 font-medium hover:text-custom-text-200"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteProjectModal(true);
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </div>
+                  </div>
+                )
+              ) : (
+                <>
+                  {isMemberOfProject &&
+                    (hasAdminRole || hasMemberRole ? (
+                      <Link
+                        className="flex items-center justify-center rounded p-1 text-custom-text-400 hover:bg-custom-background-80 hover:text-custom-text-200"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        href={`/${workspaceSlug}/settings/projects/${project.id}`}
+                      >
+                        <Settings className="h-3.5 w-3.5" />
+                      </Link>
+                    ) : (
+                      <span className="flex items-center gap-1 text-custom-text-400 text-sm">
+                        <Check className="h-3.5 w-3.5" />
+                        Joined
+                      </span>
+                    ))}
+                  {!isMemberOfProject && (
+                    <div>
+                      <Button onClick={() => setJoinProjectModal(true)} variant="neutral-primary" size="sm">
+                        <UserPlus className="h-3.5 w-3.5" />
+                        {project?.total_members || 0} Members
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </Link>
+      )}
     </>
   );
 });

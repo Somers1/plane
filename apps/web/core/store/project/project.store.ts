@@ -30,6 +30,9 @@ export interface IProjectStore {
   joinedProjectIds: string[];
   favoriteProjectIds: string[];
   currentProjectDetails: TProject | undefined;
+  // kanban grouping
+  getGroupedProjectIds: (groupBy: string, subGroupBy?: string) => Record<string, string[]> | Record<string, Record<string, string[]>>;
+  getProjectIdsByGroup: (groupBy: string, groupId: string) => string[];
   // actions
   getProjectById: (projectId: string | undefined | null) => TProject | undefined;
   getPartialProjectById: (projectId: string | undefined | null) => TPartialProject | undefined;
@@ -253,6 +256,45 @@ export class ProjectStore implements IProjectStore {
       .map((project) => project.id);
     return projectIds;
   }
+
+  getGroupedProjectIds = computedFn((groupBy: string, subGroupBy?: string) => {
+    const projectIds = this.filteredProjectIds || [];
+    if (!groupBy || groupBy === "none") {
+      return { "all": projectIds };
+    }
+    if (subGroupBy && subGroupBy !== "none") {
+      const grouped: Record<string, Record<string, string[]>> = {};
+      projectIds.forEach((projectId) => {
+        const project = this.projectMap[projectId];
+        if (!project) return;
+        const groupValue = (project[groupBy as keyof TProject] as string) || "none";
+        const subGroupValue = (project[subGroupBy as keyof TProject] as string) || "none";
+        if (!grouped[subGroupValue]) grouped[subGroupValue] = {};
+        if (!grouped[subGroupValue][groupValue]) grouped[subGroupValue][groupValue] = [];
+        grouped[subGroupValue][groupValue].push(projectId);
+      });
+      return grouped;
+    }
+    const grouped: Record<string, string[]> = {};
+    projectIds.forEach((projectId) => {
+      const project = this.projectMap[projectId];
+      if (!project) return;
+      const groupValue = (project[groupBy as keyof TProject] as string) || "none";
+      if (!grouped[groupValue]) grouped[groupValue] = [];
+      grouped[groupValue].push(projectId);
+    });
+    return grouped;
+  });
+
+  getProjectIdsByGroup = computedFn((groupBy: string, groupId: string) => {
+    const projectIds = this.filteredProjectIds || [];
+    return projectIds.filter((projectId) => {
+      const project = this.projectMap[projectId];
+      if (!project) return false;
+      const groupValue = (project[groupBy as keyof TProject] as string) || "none";
+      return groupValue === groupId;
+    });
+  });
 
   setOpenCollapsibleSection = (section: ProjectOverviewCollapsible[]) => {
     this.openCollapsibleSection = section;

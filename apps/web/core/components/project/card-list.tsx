@@ -1,20 +1,16 @@
 import { observer } from "mobx-react";
-// plane imports
 import { EUserPermissionsLevel, EUserPermissions, PROJECT_TRACKER_ELEMENTS } from "@plane/constants";
 import { useTranslation } from "@plane/i18n";
 import { EmptyStateDetailed } from "@plane/propel/empty-state";
 import { ContentWrapper } from "@plane/ui";
-// components
 import { calculateTotalFilters } from "@plane/utils";
 import { ProjectsLoader } from "@/components/ui/loader/projects-loader";
 import { captureClick } from "@/helpers/event-tracker.helper";
-// hooks
 import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useProject } from "@/hooks/store/use-project";
 import { useProjectFilter } from "@/hooks/store/use-project-filter";
 import { useUserPermissions } from "@/hooks/store/user";
-// local imports
-import { ProjectCard } from "./card";
+import { BaseProjectKanbanRoot } from "./project-layouts/kanban/base-kanban-root";
 
 type TProjectCardListProps = {
   totalProjectIds?: string[];
@@ -23,25 +19,20 @@ type TProjectCardListProps = {
 
 export const ProjectCardList = observer((props: TProjectCardListProps) => {
   const { totalProjectIds: totalProjectIdsProps, filteredProjectIds: filteredProjectIdsProps } = props;
-  // plane hooks
   const { t } = useTranslation();
-  // store hooks
   const { toggleCreateProjectModal } = useCommandPalette();
   const {
     loader,
     fetchStatus,
     workspaceProjectIds: storeWorkspaceProjectIds,
     filteredProjectIds: storeFilteredProjectIds,
-    getProjectById,
   } = useProject();
   const { currentWorkspaceDisplayFilters, currentWorkspaceFilters } = useProjectFilter();
   const { allowPermissions } = useUserPermissions();
 
-  // derived values
   const workspaceProjectIds = totalProjectIdsProps ?? storeWorkspaceProjectIds;
   const filteredProjectIds = filteredProjectIdsProps ?? storeFilteredProjectIds;
 
-  // permissions
   const canPerformEmptyStateActions = allowPermissions(
     [EUserPermissions.ADMIN, EUserPermissions.MEMBER],
     EUserPermissionsLevel.WORKSPACE
@@ -98,13 +89,7 @@ export const ProjectCardList = observer((props: TProjectCardListProps) => {
 
   return (
     <ContentWrapper>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {filteredProjectIds.map((projectId) => {
-          const projectDetails = getProjectById(projectId);
-          if (!projectDetails) return;
-          return <ProjectCard key={projectDetails.id} project={projectDetails} />;
-        })}
-      </div>
+      <BaseProjectKanbanRoot />
     </ContentWrapper>
   );
 });

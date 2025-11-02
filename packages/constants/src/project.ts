@@ -1,5 +1,5 @@
 // plane imports
-import { IProject, TProjectAppliedDisplayFilterKeys, TProjectOrderByOptions } from "@plane/types";
+import { IProject, TProjectAppliedDisplayFilterKeys, TProjectOrderByOptions, TProjectGroupByOptions } from "@plane/types";
 // local imports
 import { RANDOM_EMOJI_CODES } from "./emoji";
 
@@ -158,3 +158,31 @@ export enum EProjectFeatureKey {
   PAGES = "pages",
   INTAKE = "intake",
 }
+
+export const DRAG_ALLOWED_PROJECT_GROUPS: TProjectGroupByOptions[] = ["stage", "priority"];
+
+export type TProjectPriorities = "urgent" | "high" | "medium" | "low" | "none";
+
+export const PROJECT_PRIORITIES: {
+  key: TProjectPriorities;
+  title: string;
+}[] = [
+  { key: "urgent", title: "Urgent" },
+  { key: "high", title: "High" },
+  { key: "medium", title: "Medium" },
+  { key: "low", title: "Low" },
+  { key: "none", title: "None" },
+];
+
+export type TProjectStages = "backlog" | "unstarted" | "started" | "completed" | "cancelled";
+
+export const PROJECT_STAGES: {
+  key: TProjectStages;
+  title: string;
+}[] = [
+  { key: "backlog", title: "Backlog" },
+  { key: "unstarted", title: "Unstarted" },
+  { key: "started", title: "Started" },
+  { key: "completed", title: "Completed" },
+  { key: "cancelled", title: "Cancelled" },
+];

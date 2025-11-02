@@ -7,10 +7,14 @@ export type TProjectOrderByOptions =
   | "members_length"
   | "-members_length";
 
+export type TProjectGroupByOptions = "stage" | "priority" | "none";
+
 export type TProjectDisplayFilters = {
   my_projects?: boolean;
   archived_projects?: boolean;
   order_by?: TProjectOrderByOptions;
+  group_by?: TProjectGroupByOptions;
+  sub_group_by?: TProjectGroupByOptions;
 };
 
 export type TProjectAppliedDisplayFilterKeys = "my_projects" | "archived_projects";
