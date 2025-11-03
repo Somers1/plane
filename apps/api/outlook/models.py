@@ -103,11 +103,27 @@ class EmailDataSource(models.Model):
 
 
 class EmbeddingHandler(models.Manager):
-    def handle_missing(self):
+    def embed_missing(self):
         emails = list(self.filter(embedding__isnull=True))
-        total = len(emails)
-        print(f"Processing {total} emails concurrently")
-        asyncio.run(asyncio.gather(*[email.aembed() for email in emails]))
+        batch_size = 20
+        total_batches = (len(emails) + batch_size - 1) // batch_size
+        for i in range(0, len(emails), batch_size):
+            batch = emails[i:i + batch_size]
+            texts = []
+            valid_emails = []
+            for email in batch:
+                if email.cleaned_body:
+                    texts.append(email.email_prompt)
+                    valid_emails.append(email)
+            if not texts:
+                continue
+            batch_num = i // batch_size + 1
+            print(f"Processing batch {batch_num}/{total_batches}: {len(texts)} emails")
+            response = llm.embed.embed_documents(texts)
+            embeddings = response.embeddings['float']
+            for email, embedding in zip(valid_emails, embeddings):
+                email.embedding = embedding
+            Email.objects.bulk_update(valid_emails, ['embedding'])
 
 class Email(models.Model):
     source = models.ForeignKey(EmailDataSource, on_delete=models.CASCADE, related_name='emails')
@@ -221,14 +237,7 @@ class Email(models.Model):
     def embed(self):
         if not self.email_prompt.strip('\n').strip():
             return self
-        self.embedding = llm.embed.embed_query(self.email_prompt)
-        self.save(update_fields=['embedding'])
-        return self
-
-    async def aembed(self):
-        if not self.email_prompt.strip('\n').strip():
-            return self
-        self.embedding = await llm.embed.aembed_query(self.email_prompt)
+        self.embedding = llm.embed.embed_documents([self.email_prompt])
         self.save(update_fields=['embedding'])
         return self
 
