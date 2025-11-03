@@ -71,3 +71,11 @@ opentelemetry-exporter-otlp==1.28.1
 drf-spectacular==0.28.0
 # html sanitizer
 nh3==0.2.18
+
+# Added packages for outlook, bedrock and plane_ai
+beautifulsoup4
+pgvector
+pdfplumber
+json5
+json_repair
+django-cryptography

@@ -49,6 +49,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "django_celery_beat",
+    # New embedded AI apps
+    "bedrock",
+    "outlook",
+    "plane_ai",
 ]
 
 # Middlewares

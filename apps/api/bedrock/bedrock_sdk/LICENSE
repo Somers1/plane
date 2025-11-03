@@ -1,0 +1,38 @@
+NOTICE OF INDEPENDENT DEVELOPMENT AND FUTURE OPEN SOURCE RELEASE
+
+Copyright (c) 2024 Somerson PTY LTD. All rights reserved.
+
+IMPORTANT NOTICE:
+This software component was developed independently by Somerson PTY LTD
+outside of any client engagement or billable hours. This is NOT part of any
+client deliverables or work-for-hire agreement.
+
+TEMPORARY INCLUSION:
+This component is temporarily included in this project for convenience until
+it is published as a standalone open source package.
+
+FUTURE LICENSING:
+This software will be released as an open source package under the MIT License
+(or Apache 2.0 License) on PyPI and GitHub. The open source release is at the
+sole discretion of Somerson PTY LTD as the copyright holder.
+
+CLARIFICATION OF OWNERSHIP:
+- This software is the exclusive property of Somerson PTY LTD
+- No client work agreement covers this component
+- This was developed on personal time with no client funding
+- The decision to open source this software is independent of any client work
+
+CURRENT TERMS:
+Until the open source release, this software is provided for use in this project
+under the following terms:
+1. No ownership rights are transferred
+2. No exclusive rights are granted
+3. The copyright holder retains all rights to publish, license, and distribute
+   this software as they see fit
+
+For questions or clarifications, contact: [Your Email Address]
+
+---
+Note: When this component is published as a separate package, it will be
+available under standard open source terms for anyone to use, modify, and
+distribute.
