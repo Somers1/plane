@@ -144,7 +144,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return None
 
     def save(self, *args, **kwargs):
-        self.email = self.email.lower().strip()
+        if self.email:
+            self.email = self.email.lower().strip()
         self.mobile_number = self.mobile_number
 
         if self.token_updated_at is not None:

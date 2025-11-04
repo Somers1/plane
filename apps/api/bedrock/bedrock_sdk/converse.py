@@ -4,6 +4,7 @@ import inspect
 import json
 import logging
 import re
+import traceback
 import typing
 import uuid
 from dataclasses import dataclass, fields
@@ -991,9 +992,11 @@ class ConverseAgent(Converse):
                     except Exception as e:
                         tool_result = ToolResult(
                             tool_use_id=tool_use_id,
-                            content=[ToolResultContent(text=str(e))],
+                            content=[ToolResultContent(text=f"Tool Call FAILED! Exception {e}. Trace: {traceback.print_exc()}")],
                             status="error"
                         )
+                        if self.debug:
+                            logger.warning(f'FAILED {tool_name}: {e}')
                     tool_results.append(tool_result)
             if tool_results:
                 tool_message = Message(role="user")

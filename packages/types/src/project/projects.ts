@@ -50,6 +50,7 @@ export interface IProject extends IPartialProject {
   anchor?: string | null;
   is_favorite?: boolean;
   members?: string[];
+  total_members: number;
   timezone?: string;
     // project-level prioritization and stage for board grouping
   stage?: TStateGroups;
