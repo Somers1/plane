@@ -131,7 +131,7 @@ class Model(models.Model):
         )
 
     def usage_callback(self, timestamp, usage: TokenUsage):
-        cost = InvokeCost(timestamp=timestamp, model_id=self.model_id)
+        cost = InvokeCost(timestamp=timestamp, model_id=self.id)
         cost.duration = time.time() - timestamp.timestamp()
         cost.completion_tokens = usage.output_tokens
         cost.prompt_tokens = usage.input_tokens

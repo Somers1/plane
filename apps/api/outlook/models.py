@@ -12,7 +12,7 @@ from django.db import models
 from django.utils import timezone
 from django_cryptography.fields import encrypt
 from pdfminer.pdfdocument import PDFPasswordIncorrect
-from pgvector.django import VectorField
+from pgvector.django import VectorField, L2Distance
 
 from bedrock.bedrock_sdk.converse import InvalidFormat
 from bedrock.models import llm
@@ -94,6 +94,15 @@ class EmailDataSource(models.Model):
         logging.info(f'Scraped {len(emails)} emails')
         self.save(update_fields=['delta_token', 'last_sync'])
 
+    def update_classifications(self):
+        emails = {e.message_id: e for e in self.emails.all()}
+        update_emails = []
+        for ms_email in self.msgraph_client.get_all_emails():
+            if ms_email['id'] in emails:
+                emails[ms_email['id']].classification = ms_email['inferenceClassification']
+                update_emails.append(emails[ms_email['id']])
+        self.emails.bulk_update(update_emails, fields=['classification'])
+
     def create_emails(self, emails):
         self.emails.bulk_create(emails, ignore_conflicts=True)
 
@@ -105,7 +114,7 @@ class EmailDataSource(models.Model):
 class EmbeddingHandler(models.Manager):
     def embed_missing(self):
         emails = list(self.filter(embedding__isnull=True))
-        batch_size = 20
+        batch_size = 5
         total_batches = (len(emails) + batch_size - 1) // batch_size
         for i in range(0, len(emails), batch_size):
             batch = emails[i:i + batch_size]
@@ -125,6 +134,11 @@ class EmbeddingHandler(models.Manager):
                 email.embedding = embedding
             Email.objects.bulk_update(valid_emails, ['embedding'])
 
+    def search(self, query):
+        response = llm.embed.embed_query(query)
+        return self.all().order_by(L2Distance('embedding', response))[:10]
+
+
 class Email(models.Model):
     source = models.ForeignKey(EmailDataSource, on_delete=models.CASCADE, related_name='emails')
     message_id = models.CharField(max_length=255)
@@ -137,6 +151,7 @@ class Email(models.Model):
     has_attachments = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     cleaned_body = models.TextField(null=True)
+    classification = models.CharField(max_length=255, null=True)
     embedding = VectorField(dimensions=1536, null=True)
 
     objects = models.Manager()
@@ -160,6 +175,7 @@ class Email(models.Model):
         self.subject = email['subject'] or ''
         self.from_email = email['from']['emailAddress']['address']
         self.body = email['body']['content']
+        self.classification = email['inferenceClassification']
         self.has_attachments = email['hasAttachments']
         return self
 
