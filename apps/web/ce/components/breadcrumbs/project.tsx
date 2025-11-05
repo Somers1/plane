@@ -11,7 +11,7 @@ import { SwitcherLabel } from "@/components/common/switcher-label";
 // hooks
 import { useProject } from "@/hooks/store/use-project";
 import { useAppRouter } from "@/hooks/use-app-router";
-import type { TProject } from "@/plane-web/types";
+import type { IPartialProject } from "@/plane-web/types";
 
 type TProjectBreadcrumbProps = {
   workspaceSlug: string;
@@ -21,17 +21,10 @@ type TProjectBreadcrumbProps = {
 
 export const ProjectBreadcrumb = observer((props: TProjectBreadcrumbProps) => {
   const { workspaceSlug, projectId, handleOnClick } = props;
-  // router
   const router = useAppRouter();
-  // store hooks
   const { joinedProjectIds, getPartialProjectById } = useProject();
   const currentProjectDetails = getPartialProjectById(projectId);
-
-  // store hooks
-
   if (!currentProjectDetails) return null;
-
-  // derived values
   const switcherOptions = joinedProjectIds
     .map((projectId) => {
       const project = getPartialProjectById(projectId);
@@ -49,9 +42,7 @@ export const ProjectBreadcrumb = observer((props: TProjectBreadcrumbProps) => {
       };
     })
     .filter((option) => option !== undefined) as ICustomSearchSelectOption[];
-
-  // helpers
-  const renderIcon = (projectDetails: TProject) => (
+  const renderIcon = (projectDetails: IPartialProject) => (
     <span className="grid place-items-center flex-shrink-0 h-4 w-4">
       <Logo logo={projectDetails.logo_props} size={14} />
     </span>

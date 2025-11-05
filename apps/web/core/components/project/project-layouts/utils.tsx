@@ -100,15 +100,15 @@ export const handleProjectGroupDragDrop = async (
   if (!source.id || !destination.groupId || !groupBy) return;
   const sourceProject = getProjectById(source.id);
   if (!sourceProject) return;
-  let updatePayload: Partial<TProject> = {};
+  let updatePayload: Record<string, any> = {};
   if (groupBy && groupBy !== "none" && source.groupId !== destination.groupId) {
-    updatePayload[groupBy as keyof TProject] = destination.groupId === "none" ? null : destination.groupId;
+    updatePayload[groupBy] = destination.groupId === "none" ? null : destination.groupId;
   }
   if (subGroupBy && subGroupBy !== "none" && source.subGroupId && destination.subGroupId && source.subGroupId !== destination.subGroupId) {
-    updatePayload[subGroupBy as keyof TProject] = destination.subGroupId === "none" ? null : destination.subGroupId;
+    updatePayload[subGroupBy] = destination.subGroupId === "none" ? null : destination.subGroupId;
   }
   if (Object.keys(updatePayload).length > 0) {
-    await updateProjectOnDrop(workspaceSlug, sourceProject.id, updatePayload);
+    await updateProjectOnDrop(workspaceSlug, sourceProject.id, updatePayload as Partial<TProject>);
   }
   if (!shouldResetSortOrder) {
     const destinationGroupId = subGroupBy && destination.subGroupId ? destination.subGroupId : destination.groupId;

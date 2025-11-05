@@ -2,7 +2,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { DRAG_ALLOWED_PROJECT_GROUPS } from "@plane/constants";
 import type { TProjectGroupByOptions } from "@plane/types";
-import type { ProjectRootStore } from "./root.store";
+import type { ProjectRootStore } from "./";
 
 export interface IProjectKanbanViewStore {
   kanBanToggle: {

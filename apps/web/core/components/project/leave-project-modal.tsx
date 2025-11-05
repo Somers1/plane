@@ -8,15 +8,11 @@ import { Controller, useForm } from "react-hook-form";
 // headless ui
 import { AlertTriangleIcon } from "lucide-react";
 import { Dialog, Transition } from "@headlessui/react";
-// types
 import { MEMBER_TRACKER_EVENTS } from "@plane/constants";
 import { Button } from "@plane/propel/button";
 import { TOAST_TYPE, setToast } from "@plane/propel/toast";
-import type { IProject } from "@plane/types";
-// ui
+import type { IPartialProject } from "@plane/types";
 import { Input } from "@plane/ui";
-// constants
-// hooks
 import { captureError, captureSuccess } from "@/helpers/event-tracker.helper";
 import { useUserPermissions } from "@/hooks/store/user";
 import { useAppRouter } from "@/hooks/use-app-router";
@@ -32,7 +28,7 @@ const defaultValues: FormData = {
 };
 
 export interface ILeaveProjectModal {
-  project: IProject;
+  project: IPartialProject;
   isOpen: boolean;
   onClose: () => void;
 }

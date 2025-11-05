@@ -23,7 +23,7 @@ import { useCommandPalette } from "@/hooks/store/use-command-palette";
 import { useProject } from "@/hooks/store/use-project";
 import { useUserPermissions } from "@/hooks/store/user";
 // plane web imports
-import type { TProject } from "@/plane-web/types";
+import type { IPartialProject } from "@/plane-web/types";
 // local imports
 import { SidebarProjectsListItem } from "./projects-list-item";
 
@@ -68,7 +68,7 @@ export const SidebarProjectsList: FC = observer(() => {
     if (!sourceId || !destinationId || !workspaceSlug) return;
     if (sourceId === destinationId) return;
 
-    const joinedProjectsList: TProject[] = [];
+    const joinedProjectsList: IPartialProject[] = [];
     joinedProjects.map((projectId) => {
       const projectDetails = getPartialProjectById(projectId);
       if (projectDetails) joinedProjectsList.push(projectDetails);

@@ -17,7 +17,7 @@ import { SidebarProjectsListItem } from "@/components/workspace/sidebar/projects
 import { useAppTheme } from "@/hooks/store/use-app-theme";
 import { useProject } from "@/hooks/store/use-project";
 import { useUserPermissions } from "@/hooks/store/user";
-import type { TProject } from "@/plane-web/types";
+import type { IPartialProject } from "@/plane-web/types";
 import { ExtendedSidebarWrapper } from "./extended-sidebar-wrapper";
 
 export const ExtendedProjectSidebar = observer(() => {
@@ -42,7 +42,7 @@ export const ExtendedProjectSidebar = observer(() => {
     if (!sourceId || !destinationId || !workspaceSlug) return;
     if (sourceId === destinationId) return;
 
-    const joinedProjectsList: TProject[] = [];
+    const joinedProjectsList: IPartialProject[] = [];
     joinedProjects.map((projectId) => {
       const projectDetails = getPartialProjectById(projectId);
       if (projectDetails) joinedProjectsList.push(projectDetails);
