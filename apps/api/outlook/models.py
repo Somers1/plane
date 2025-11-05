@@ -75,6 +75,12 @@ class EmailDataSource(models.Model):
     def scrape_all(self):
         return self.save_emails(self.msgraph_client.get_all_emails())
 
+    def scrape_changed(self):
+        last_synced = self.last_sync
+        self.scrape_range(self.last_sync)
+        self.last_sync = last_synced
+        self.save(update_fields=['last_sync'])
+
     def scrape_range(self, start_time, end_time=None):
         return self.save_emails(self.msgraph_client.by_time_range(start_time, end_time))
 
@@ -121,7 +127,7 @@ class EmbeddingHandler(models.Manager):
             texts = []
             valid_emails = []
             for email in batch:
-                if email.cleaned_body:
+                if email.ensured_cleaned_body():
                     texts.append(email.email_prompt)
                     valid_emails.append(email)
             if not texts:

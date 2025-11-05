@@ -5,6 +5,7 @@ from typing import Any
 import requests
 from cryptography.utils import cached_property
 from dateutil import parser
+from django.utils import timezone
 
 from outlook import utils
 
@@ -108,7 +109,7 @@ class MSGraphEmail:
         if isinstance(end_date, datetime.datetime):
             end_date = end_date.strftime("%Y-%m-%dT%H:%M:%SZ")
         if not end_date:
-            end_date = utils.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+            end_date = timezone.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         date_filter = f"ReceivedDateTime ge {start_date} and ReceivedDateTime le {end_date}"
         endpoint = self.messages_endpoint
         params = {
